@@ -79,7 +79,7 @@ CREATE TABLE EDICION_VOLUMEN (
 
 
 -- ============================================================
---  MÓDULO 2: USUARIOS Y MEMBRESÍAS
+--  MÓDULO 2: USUARIOS Y MEMBRESÍAS (MODIFICADO)
 -- ============================================================
 
 CREATE TABLE TIPOS_USUARIO (
@@ -88,24 +88,26 @@ CREATE TABLE TIPOS_USUARIO (
     descripcion    TEXT
 );
 
+CREATE TABLE PERSONA (
+    idPersona    SERIAL        PRIMARY KEY,
+    pNombre      VARCHAR(80)   NOT NULL,
+    sNombre      VARCHAR(80),
+    pApellido    VARCHAR(80)   NOT NULL,
+    sApellido    VARCHAR(80),
+    correo       VARCHAR(150)  UNIQUE NOT NULL,
+    telefono     VARCHAR(20),
+    direccion    TEXT
+);
+
 CREATE TABLE USUARIOS (
     idUsuario       SERIAL        PRIMARY KEY,
-    nombres         VARCHAR(100)  NOT NULL,
-    apellidos       VARCHAR(100)  NOT NULL,
-    correo          VARCHAR(150)  UNIQUE NOT NULL,
-    telefono        VARCHAR(20),
-    direccion       TEXT,
+    passwordHash    VARCHAR(255)  NOT NULL,
     fechaRegistro   DATE          DEFAULT CURRENT_DATE,
+    idPersona       INT           NOT NULL UNIQUE REFERENCES PERSONA(idPersona),
     idTipoUsuario   INT           NOT NULL REFERENCES TIPOS_USUARIO(idTipoUsuario)
 );
 
-CREATE TABLE CREDENCIALES (
-    idCredencial   SERIAL        PRIMARY KEY,
-    usuarioLogin   VARCHAR(100)  NOT NULL UNIQUE,
-    passwordHash   VARCHAR(255)  NOT NULL,
-    tokenAcceso    TEXT,
-    idUsuario      INT           NOT NULL UNIQUE REFERENCES USUARIOS(idUsuario)
-);
+
 
 CREATE TABLE MEMBRESIAS (
     idMembresia      SERIAL          PRIMARY KEY,
@@ -122,7 +124,6 @@ CREATE TABLE HISTORIAL_MEMBRESIAS (
     fechaInicio           DATE    NOT NULL,
     fechaFin              DATE
 );
-
 
 -- ============================================================
 --  MÓDULO 3: PRÉSTAMOS, DEVOLUCIONES Y RESERVAS
@@ -185,11 +186,8 @@ CREATE TABLE TURNOS (
 
 CREATE TABLE EMPLEADOS (
     idEmpleado         SERIAL        PRIMARY KEY,
-    nombres            VARCHAR(100)  NOT NULL,
-    apellidos          VARCHAR(100)  NOT NULL,
-    correo             VARCHAR(150)  UNIQUE,
-    telefono           VARCHAR(20),
     fechaContratacion  DATE,
+    idPersona          INT           NOT NULL UNIQUE REFERENCES PERSONA(idPersona),
     idRol              INT           NOT NULL REFERENCES ROLES_EMPLEADO(idRol),
     idTurno            INT           REFERENCES TURNOS(idTurno)
 );
